@@ -57,8 +57,6 @@ import com.android.quickstep.TouchInteractionService;
 import com.android.systemui.unfold.UnfoldTransitionProgressProvider;
 import com.android.systemui.unfold.util.ScopedUnfoldTransitionProgressProvider;
 
-import android.provider.Settings;
-
 import java.io.PrintWriter;
 
 /**
@@ -125,7 +123,6 @@ public class TaskbarManager implements OnSharedPreferenceChangeListener {
                 SystemUiProxy.INSTANCE.get(mContext), new Handler());
         mUserSetupCompleteListener = isUserSetupComplete -> recreateTaskbar();
         mNavBarKidsModeListener = isNavBarKidsMode -> recreateTaskbar();
-
         // TODO(b/227669780): Consolidate this w/ DisplayController callbacks
         mComponentCallbacks = new ComponentCallbacks() {
             private Configuration mOldConfig = mContext.getResources().getConfiguration();
@@ -308,11 +305,9 @@ public class TaskbarManager implements OnSharedPreferenceChangeListener {
         destroyExistingTaskbar();
 
         boolean isTaskBarEnabled = dp != null && isTaskbarPresent(dp);
-
-        SystemUiProxy sysui = SystemUiProxy.INSTANCE.get(mContext);
-        sysui.setTaskbarEnabled(isTaskBarEnabled);
         if (!isTaskBarEnabled) {
-            sysui.notifyTaskbarStatus(/* visible */ false, /* stashed */ false);
+            SystemUiProxy.INSTANCE.get(mContext)
+                    .notifyTaskbarStatus(/* visible */ false, /* stashed */ false);
             return;
         }
 
