@@ -70,9 +70,6 @@ public class TaskbarManager {
     private static final Uri NAV_BAR_KIDS_MODE = Settings.Secure.getUriFor(
             Settings.Secure.NAV_BAR_KIDS_MODE);
 
-    private static final Uri ENABLE_TASKBAR_URI = Settings.System.getUriFor(
-            Settings.System.ENABLE_TASKBAR);
-
     private final Context mContext;
     private final DisplayController mDisplayController;
     private final TaskbarNavButtonController mNavButtonController;
@@ -125,12 +122,6 @@ public class TaskbarManager {
         mUserSetupCompleteListener = isUserSetupComplete -> recreateTaskbar();
         mNavBarKidsModeListener = isNavBarKidsMode -> recreateTaskbar();
         mEnableTaskBarListener = isTaskBarEnabled -> {
-            // Create the illusion of this taking effect immediately
-            // Also needed because TaskbarManager inits before SystemUiProxy on start
-            boolean enabled = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.ENABLE_TASKBAR, 0) == 1;
-            SystemUiProxy.INSTANCE.get(mContext).setTaskbarEnabled(enabled);
-
             // Restart launcher
             System.exit(0);
         };
@@ -196,8 +187,6 @@ public class TaskbarManager {
                 mUserSetupCompleteListener);
         SettingsCache.INSTANCE.get(mContext).register(NAV_BAR_KIDS_MODE,
                 mNavBarKidsModeListener);
-        SettingsCache.INSTANCE.get(mContext).register(ENABLE_TASKBAR_URI,
-                mEnableTaskBarListener);
         mContext.registerComponentCallbacks(mComponentCallbacks);
         mShutdownReceiver.register(mContext, Intent.ACTION_SHUTDOWN);
 
@@ -229,8 +218,6 @@ public class TaskbarManager {
      */
     public void onUserUnlocked() {
         mUserUnlocked = true;
-        SharedPreferences prefs = Utilities.getPrefs(mContext);
-        prefs.registerOnSharedPreferenceChangeListener(this);
         recreateTaskbar();
     }
 
