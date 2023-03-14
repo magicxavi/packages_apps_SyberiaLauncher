@@ -394,7 +394,6 @@ public class Launcher extends StatefulActivity<LauncherState>
     private LauncherState mPrevLauncherState;
 
     private StringCache mStringCache;
-    private boolean mPendingRestart;
 
     @Override
     @TargetApi(Build.VERSION_CODES.S)
@@ -618,9 +617,6 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     @Override
     public void onIdpChanged(boolean modelPropertiesChanged, boolean taskbarChanged) {
-        if (taskbarChanged) {
-            mPendingRestart = true;
-        }
         onHandleConfigurationChanged();
     }
 
@@ -1010,10 +1006,6 @@ public class Launcher extends StatefulActivity<LauncherState>
 
         mAppWidgetHost.setActivityStarted(true);
         TraceHelper.INSTANCE.endSection(traceToken);
-
-        if (mPendingRestart) {
-            System.exit(0);
-        }
     }
 
     @Override
